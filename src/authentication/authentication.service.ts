@@ -15,10 +15,8 @@ export class AuthenticationService {
                 ...registrationData,
                 password: hashPassword
             });
-            return {
-                "email": createdUser.email,
-                "username": createdUser.username
-            };
+            createdUser.password = '';
+            return createdUser;
         } catch (error) {
             if (error?.code === PostgresErrorCode.UniqueViolation) {
                 throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
@@ -32,10 +30,8 @@ export class AuthenticationService {
         try {
             const user = await this.userService.getByEmail(email);
             await this.verifyPassword(password, user.password);
-            return {
-                "email": user.email,
-                "username": user.username
-            };
+            user.password = '';
+            return user;
         } catch (error) {
             throw new HttpException('Wrong email or password', HttpStatus.BAD_REQUEST);
         }
