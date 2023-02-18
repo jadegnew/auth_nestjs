@@ -16,6 +16,34 @@ After pull, please, make sure you have **.env** file with this content:
 |HOST|`Server host`|
 |PORT|`Server port`|
 
+## Current endpoints graph
+
+```mermaid
+graph TD;
+    /-->/auth;
+    /auth-->/registration;
+    /auth-->/login;
+```
+### Request examples
+
+ - @POST  registration
+
+```go
+{ 
+	"email": "someemail@gmail.com",
+	"username": "somename",
+	"password": "somepassword"
+ }
+```
+
+ - @POST  login
+
+```go
+{ 
+	"email": "someemail@gmail.com",
+	"password": "somepassword"
+ }
+```
 
 
 ## Log
