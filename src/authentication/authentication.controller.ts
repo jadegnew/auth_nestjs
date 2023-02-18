@@ -17,7 +17,7 @@ export class AuthenticationController {
     @HttpCode(200)
     @UseGuards(LocalAuthenticationGuard)
     @Post('login')
-    async logIn(@Req() request: RequestWithUser) {
+    async login(@Req() request: RequestWithUser) { 
         const user: User = request.user;
         user.password = '';
         return user;
