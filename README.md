@@ -26,7 +26,7 @@ graph TD;
 ```
 ### Request examples
 
- - @POST  registration
+ - `@POST`  registration
 
 ```go
 { 
@@ -36,7 +36,7 @@ graph TD;
  }
 ```
 
- - @POST  login
+ - `@POST`  login
 
 ```go
 { 
