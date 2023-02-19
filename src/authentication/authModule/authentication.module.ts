@@ -7,6 +7,7 @@ import { AuthenticationController } from './authentication.controller';
 import { AuthenticationService } from './authentication.service';
 import { LocalStrategy } from '../LocalStrategy/local.strategy';
 import { JwtStrategy } from '../JwtStrategy/jwt.strategy';
+import { ClassSerializerInterceptor } from '@nestjs/common/serializer';
 
 @Module({
     imports: [
@@ -24,7 +25,7 @@ import { JwtStrategy } from '../JwtStrategy/jwt.strategy';
             }),
         })
     ],
-    providers: [AuthenticationService, LocalStrategy, JwtStrategy],
+    providers: [AuthenticationService, LocalStrategy, JwtStrategy, ClassSerializerInterceptor],
     controllers: [AuthenticationController],
 })
 export class AuthenticationModule { }

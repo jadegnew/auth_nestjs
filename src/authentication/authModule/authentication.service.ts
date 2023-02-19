@@ -23,7 +23,6 @@ export class AuthenticationService {
                 ...registrationData,
                 password: hashPassword
             });
-            createdUser.password = '';
             return createdUser;
         } catch (error) {
             if (error?.code === PostgresErrorCode.UniqueViolation) {
@@ -38,7 +37,6 @@ export class AuthenticationService {
         try {
             const user = await this.userService.getByEmail(email);
             await this.verifyPassword(password, user.password);
-            user.password = '';
             return user;
         } catch (error) {
             throw new HttpException('Wrong email or password', HttpStatus.BAD_REQUEST);
