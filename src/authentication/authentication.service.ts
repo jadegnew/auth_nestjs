@@ -2,13 +2,21 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { RegistrationDto } from './registration.dto';
 import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
+import { JwtService } from '@nestjs/jwt/dist';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { User } from 'src/user/user.entity';
+import { TokenPayload } from './tokenPayload.interface';
 
 @Injectable()
 export class AuthenticationService {
-    constructor(private readonly userService: UserService) { }
+    constructor(
+        private readonly userService: UserService,
+        private readonly jwtService: JwtService,
+        private readonly configService: ConfigService,
+) { }
 
-    public async register(registrationData: RegistrationDto) {
+    public async register(registrationData: RegistrationDto): Promise<User> {
         const hashPassword = await bcrypt.hash(registrationData.password, 10);
         try {
             const createdUser = await this.userService.registration({
@@ -26,7 +34,7 @@ export class AuthenticationService {
         }
     }
 
-    public async login(email: string, password: string) {
+    public async login(email: string, password: string): Promise<User> {
         try {
             const user = await this.userService.getByEmail(email);
             await this.verifyPassword(password, user.password);
@@ -37,8 +45,16 @@ export class AuthenticationService {
         }
     } 
 
-    private async verifyPassword(plainPassword: string, hashPassword: string) {
+    public getTokenCookie(userId: number): string {
+        const payload: TokenPayload = { userId };
+        const token = this.jwtService.sign(payload);
+        return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get('JWT_EXPIRATION_TIME')}`;
+    }
+
+    private async verifyPassword(plainPassword: string, hashPassword: string): Promise<void> {
         const isMatch = await bcrypt.compare(plainPassword, hashPassword);
         if(!isMatch) throw new HttpException('Wrong email or password', HttpStatus.BAD_REQUEST);
     }
+
+
 }
