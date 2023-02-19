@@ -69,7 +69,7 @@ Please note, that mechanisms to hide password from response are not added yet, s
 ![Logout](https://lh3.googleusercontent.com/pw/AMWts8CORrvlrUQ1tQyWUlCGBrDU03gsXbdbQvZeVPhVPA8GNM2Z1gSTnJ9C03y8kdjy8JbIZJYOpCBpP7MRedwgYY9pD8OZ2wuolk1TJYh07QZSQycc43dLhr4PlDqKxPZd9LdT10VyCMyIHemodbwwnMc=w867-h669-no?authuser=0)
 
 # How to use JWT auth guards
-To use access token validation in any endpoint that need authorization you might follow this steps:
+To use access token validation in any endpoint that need authentication you might follow this steps:
 
  - Create controller for the route
  - Add `JwtAuthenticationGuard` to this controller
