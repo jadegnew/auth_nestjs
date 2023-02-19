@@ -54,7 +54,7 @@ graph TD;
  ```
  
  # Usage
-Please note, that mechanisms to hide password from response are not added yet, so we can see password="" in response. I`ll deal with that later.
+Please note, that mechanisms to hide password from response already added, so we can`t see password field in response. I`ll update illustrations later.
 ## Registration
 ### Registration  attempt on nonexistent email
 ![Registration  attempt on nonexistent email](https://lh3.googleusercontent.com/pw/AMWts8CKfvgssKiwwE8E-3_9EW5hScwzKoVkl6AVZe48aioesFR8qxRRuguOHgr2V_BtBtnVcm8j0Sw5j2uuG9cNW4GB4xqAnXiUICfUiRhWN7zJI3V9aVRiPx4pXH5sRwHnsysqgxtCVCao2-L2Zfiv5V8=w866-h644-no?authuser=0)
