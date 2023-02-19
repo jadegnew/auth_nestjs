@@ -77,7 +77,7 @@ To use access token validation in any endpoint that need authentication you migh
 
 ### Example:
 ```
-@UseGuards(LocalAuthenticationGuard)
+@UseGuards(JwtAuthenticationGuard)
 @Get('your-route-here')
 somefunc(){
 	return 'Success!'
