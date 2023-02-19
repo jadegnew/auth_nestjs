@@ -37,7 +37,7 @@ graph TD;
 	"email": "someemail@gmail.com",
 	"username": "somename",
 	"password": "somepassword"
- }
+}
 ```
 
  - `@POST`  login
@@ -45,7 +45,7 @@ graph TD;
 { 
 	"email": "someemail@gmail.com",
 	"password": "somepassword"
- }
+}
 ```
 
  - `@Get`  logout
