@@ -1,9 +1,8 @@
 import { Controller, Post, Body, Req, HttpCode, UseGuards, Res } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
-import { RegistrationDto } from './registration.dto';
-import RequestWithUser from './requestWithUser.interface';
-import { LocalAuthenticationGuard } from './localAuthentication.guard';
-import { User } from 'src/user/user.entity';
+import { RegistrationDto } from '../../dtos/registration.dto';
+import RequestWithUser from '../../interfaces/requestWithUser.interface';
+import { LocalAuthenticationGuard } from '../LocalStrategy/localAuthentication.guard';
 import { Response } from 'express';
 
 @Controller('auth')
