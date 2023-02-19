@@ -8,29 +8,29 @@ import { Response } from 'express';
 @Controller('auth')
 export class AuthenticationController {
     constructor(
-        private readonly authenticationService: AuthenticationService,
-        private readonly interceptor: ClassSerializerInterceptor    
+        private readonly authenticationService: AuthenticationService
     ) { }
 
     @Post('registration')
+    @UseInterceptors(ClassSerializerInterceptor)
     async registration(@Body() regData: RegistrationDto) {
-        return this.interceptor.serialize(this.authenticationService.register(regData), { strategy: 'exposeAll' });
+        return this.authenticationService.register(regData);
     }
 
     @Get('logout')
-    async logout(@Req() request: RequestWithUser, @Res() response: Response) {
+    async logout(@Res() response: Response) {
         response.setHeader('Set-Cookie', this.authenticationService.logout());
         return response.sendStatus(200);
     }
 
     @HttpCode(200)
     @UseGuards(LocalAuthenticationGuard)
+    @UseInterceptors(ClassSerializerInterceptor)
     @Post('login')
-    async login(@Req() request: RequestWithUser, @Res() response: Response) {
+    async login(@Req() request: RequestWithUser) {
         const { user } = request;
         const cookie = await this.authenticationService.getTokenCookie(user.id);
-        response.setHeader('Set-Cookie', cookie);
-        const serialized = this.interceptor.serialize(user, { strategy: 'exposeAll' });
-        return response.send(serialized);
+        request.res?.setHeader('Set-Cookie', cookie);
+        return user;
     }
 }
