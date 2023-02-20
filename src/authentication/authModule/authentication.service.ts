@@ -14,7 +14,7 @@ export class AuthenticationService {
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
-) { }
+    ) { }
 
     public async register(registrationData: RegistrationDto): Promise<User> {
         const hashPassword = await bcrypt.hash(registrationData.password, 10);
@@ -41,21 +41,40 @@ export class AuthenticationService {
         } catch (error) {
             throw new HttpException('Wrong email or password', HttpStatus.BAD_REQUEST);
         }
-    } 
-
-    public logout() {
-        return `Authentication=; HttpOnly; Path=/; Max-Age=0}`;
+    }
+    
+    public async getAccessToken(userId: number) {
+        const payload: TokenPayload = { userId };
+        const token = this.jwtService.sign(payload, {
+            secret: this.configService.get('JWT_ACCESS_SECRET'),
+            expiresIn: this.configService.get('JWT_ACCESS_EXPIRATION_TIME')
+        });
+        return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get('JWT_ACCESS_EXPIRATION_TIME')}`;
     }
 
-    public getTokenCookie(userId: number): string {
+    public async getRefreshToken(userId: number) {
         const payload: TokenPayload = { userId };
-        const token = this.jwtService.sign(payload);
-        return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get('JWT_EXPIRATION_TIME')}`;
+        const token = this.jwtService.sign(payload, {
+            secret: this.configService.get('JWT_REFRESH_SECRET'),
+            expiresIn: this.configService.get('JWT_REFRESH_EXPIRATION_TIME')
+        });
+        const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get('JWT_REFRESH_EXPIRATION_TIME')}`
+        return {
+            cookie,
+            token
+        }
+    }
+
+    public getLogoutCookies() {
+        return [
+            'Authentication=; HttpOnly; Path=/; Max-Age=0',
+            'Refresh=; HttpOnly; Path=/; Max-Age=0'
+        ];
     }
 
     private async verifyPassword(plainPassword: string, hashPassword: string): Promise<void> {
         const isMatch = await bcrypt.compare(plainPassword, hashPassword);
-        if(!isMatch) throw new HttpException('Wrong email or password', HttpStatus.BAD_REQUEST);
+        if (!isMatch) throw new HttpException('Wrong email or password', HttpStatus.BAD_REQUEST);
     }
 
 

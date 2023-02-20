@@ -3,12 +3,15 @@ import { AuthenticationService } from './authentication.service';
 import { RegistrationDto } from '../../dtos/registration.dto';
 import RequestWithUser from '../../interfaces/requestWithUser.interface';
 import { LocalAuthenticationGuard } from '../LocalStrategy/localAuthentication.guard';
-import { Response } from 'express';
+import { UserService } from 'src/user/user.service';
+import { RefreshAuthenticationGuard } from '../RefreshStrategy/refresh-authentication.guard';
+import { JwtAuthenticationGuard } from '../JwtStrategy/jwt-authentication.guard';
 
 @Controller('auth')
 export class AuthenticationController {
     constructor(
-        private readonly authenticationService: AuthenticationService
+        private readonly authenticationService: AuthenticationService,
+        private readonly userService: UserService
     ) { }
 
     @Post('registration')
@@ -17,10 +20,21 @@ export class AuthenticationController {
         return this.authenticationService.register(regData);
     }
 
-    @Get('logout')
-    async logout(@Res() response: Response) {
-        response.setHeader('Set-Cookie', this.authenticationService.logout());
-        return response.sendStatus(200);
+    @HttpCode(200)
+    @UseGuards(JwtAuthenticationGuard)
+    @Post('logout')
+    async logout(@Req() request: RequestWithUser) {
+        await this.userService.removeRefresh(request.user.id);
+        request.res?.setHeader('Set-Cookie', this.authenticationService.getLogoutCookies());
+    }
+
+    @UseInterceptors(ClassSerializerInterceptor)
+    @UseGuards(RefreshAuthenticationGuard)
+    @Get('refresh')
+    async refresh(@Req() request: RequestWithUser) {
+        const accessCookie = await this.authenticationService.getAccessToken(request.user.id);
+        request.res?.setHeader('Set-Cookie', accessCookie);
+        return request.user;
     }
 
     @HttpCode(200)
@@ -29,8 +43,10 @@ export class AuthenticationController {
     @Post('login')
     async login(@Req() request: RequestWithUser) {
         const { user } = request;
-        const cookie = await this.authenticationService.getTokenCookie(user.id);
-        request.res?.setHeader('Set-Cookie', cookie);
+        const accessCookie = await this.authenticationService.getAccessToken(user.id);
+        const refreshCookie = await this.authenticationService.getRefreshToken(user.id);
+        await this.userService.saveRefresh(user.id, refreshCookie.token)
+        request.res?.setHeader('Set-Cookie', [accessCookie, refreshCookie.cookie]);
         return user;
     }
 }

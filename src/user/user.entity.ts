@@ -16,7 +16,13 @@ export class User {
     @Exclude()
     public password: string;
 
-    constructor(partial: Partial<User>) {
-        Object.assign(this, partial);
-    }
+    @Column({
+        nullable: true
+    })
+    @Exclude()
+    public refreshToken?: string;
+
+    // constructor(partial: Partial<User>) {
+    //     Object.assign(this, partial);
+    // }
 }
