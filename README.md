@@ -19,6 +19,10 @@ Make sure to create an .env file in root directory with this content:
 |PORT|`Server port`|
 |JWT_SECRET|`Your secret key`|
 |JWT_EXPIRATION_TIME|`Expiration time of your access token`|
+|SMTP_HOST|`Gmail smtp host. Default: "smtp.gmail.com"`|
+|SMTP_PORT|`Gmail smtp port. Default: 587`|
+|SMTP_USER|`Your app email with enabled smtp`|
+|SMTP_PASSWORD|`Your app email password`|
 
 ## Current endpoints
 
@@ -49,10 +53,20 @@ graph TD;
 ```
 
  - `@Get`  logout
- ```go
- Empty body
- ```
+```go
+Empty body
+```
  
+ - `@Get` activate/:activationLink
+```go
+Empty body
+```
+ 
+ - `@POST`  refresh
+```go
+Empty body
+```
+
  # Usage
 Please note, that mechanisms to hide password from response already added, so we can't see password field in response. I'll update illustrations later.
 ## Registration
