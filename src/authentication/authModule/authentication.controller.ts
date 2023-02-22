@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Req, HttpCode, UseGuards, Res, Get, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
+import { Controller, Post, Body, Req, HttpCode, UseGuards, Res, Get, UseInterceptors, ClassSerializerInterceptor, Param } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { RegistrationDto } from '../../dtos/registration.dto';
 import RequestWithUser from '../../interfaces/requestWithUser.interface';
@@ -35,6 +35,16 @@ export class AuthenticationController {
         const accessCookie = await this.authenticationService.getAccessToken(request.user.id);
         request.res?.setHeader('Set-Cookie', accessCookie);
         return request.user;
+    }
+
+    @UseInterceptors(ClassSerializerInterceptor)
+    @UseGuards(JwtAuthenticationGuard)
+    @Get('activate/:link')
+    async activate(@Req() request: RequestWithUser) {
+        if (await this.userService.activate(request.user.id, request.params.link)) {
+            return 'Success';
+        }
+        return 'Wrong activation link';
     }
 
     @HttpCode(200)

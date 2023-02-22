@@ -5,8 +5,10 @@ import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
 import { JwtService } from '@nestjs/jwt/dist';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import * as uuid from 'uuid';
 import { User } from 'src/user/user.entity';
 import { TokenPayload } from '../../interfaces/tokenPayload.interface';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -14,15 +16,19 @@ export class AuthenticationService {
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
+        private readonly mailService: MailService,
     ) { }
 
     public async register(registrationData: RegistrationDto): Promise<User> {
         const hashPassword = await bcrypt.hash(registrationData.password, 10);
+        const link = uuid.v4();
         try {
             const createdUser = await this.userService.registration({
                 ...registrationData,
-                password: hashPassword
+                password: hashPassword,
+                activationLink: link
             });
+            await this.mailService.sendActivationMail(createdUser.email, link);
             return createdUser;
         } catch (error) {
             if (error?.code === PostgresErrorCode.UniqueViolation) {
@@ -76,6 +82,4 @@ export class AuthenticationService {
         const isMatch = await bcrypt.compare(plainPassword, hashPassword);
         if (!isMatch) throw new HttpException('Wrong email or password', HttpStatus.BAD_REQUEST);
     }
-
-
 }

@@ -37,6 +37,18 @@ export class UserService {
         });
     }
 
+    async activate(id: number, link: string): Promise<boolean> {
+        const user = await this.getById(id);
+        if (user.activationLink === link) {
+            this.userRepository.update(id, {
+                activationLink: '',
+                isActivated: true
+            });
+            return true;
+        }
+        return false;
+    }
+
     async removeRefresh(id: number) {
         return this.userRepository.update(id, {
             refreshToken: ''

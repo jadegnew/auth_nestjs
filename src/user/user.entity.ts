@@ -12,6 +12,17 @@ export class User {
     @Column()
     public username: string;
 
+    @Column({
+        default: false
+    })
+    public isActivated: boolean;
+
+    @Column({
+        nullable: true
+    })
+    @Exclude()
+    public activationLink: string
+
     @Column()
     @Exclude()
     public password: string;
@@ -21,8 +32,4 @@ export class User {
     })
     @Exclude()
     public refreshToken?: string;
-
-    // constructor(partial: Partial<User>) {
-    //     Object.assign(this, partial);
-    // }
 }
